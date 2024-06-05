@@ -14,6 +14,7 @@ class Country(models.Model):
         return self.name
 
     class Meta:
+        verbose_name_plural = "countries"
         ordering = ["name"]
 
 
@@ -27,6 +28,7 @@ class City(models.Model):
         return f"{self.country} ({self.name})"
 
     class Meta:
+        verbose_name_plural = "cities"
         ordering = ["name"]
 
 
@@ -80,8 +82,16 @@ class Airport(models.Model):
 
 
 class Route(models.Model):
-    source = models.ForeignKey(Airport, on_delete=models.CASCADE)
-    destination = models.ForeignKey(Airport, on_delete=models.CASCADE)
+    source = models.ForeignKey(
+        Airport,
+        on_delete=models.CASCADE,
+        related_name="departure_routes"
+    )
+    destination = models.ForeignKey(
+        Airport,
+        on_delete=models.CASCADE,
+        related_name="arrival_routes"
+    )
     distance = models.IntegerField()
 
     def __str__(self):
