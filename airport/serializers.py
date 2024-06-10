@@ -67,6 +67,13 @@ class AirportSerializer(serializers.ModelSerializer):
         )
 
 
+class AirportListSerializer(AirportSerializer):
+    city = serializers.SlugRelatedField(
+        read_only=True, slug_field="name"
+    )
+
+
+
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
