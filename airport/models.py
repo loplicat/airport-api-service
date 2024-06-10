@@ -25,7 +25,7 @@ class City(models.Model):
     )
 
     def __str__(self):
-        return f"{self.country} ({self.name})"
+        return f"{self.name} ({self.country})"
 
     class Meta:
         verbose_name_plural = "cities"
@@ -63,7 +63,7 @@ class Airplane(models.Model):
         return self.rows * self.seats_in_row
 
     def __str__(self):
-        return self.name + " " + self.airplane_type.name
+        return self.name
 
     class Meta:
         ordering = ["name"]
@@ -75,7 +75,7 @@ class Airport(models.Model):
     closest_big_city = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.name} ({self.city})"
+        return f"{self.city.name} ({self.name})"
 
     class Meta:
         ordering = ["name"]
@@ -95,7 +95,7 @@ class Route(models.Model):
     distance = models.IntegerField()
 
     def __str__(self):
-        return self.source
+        return f"{self.source.city.name} → {self.destination.city.name}"
 
 
 class Crew(models.Model):
@@ -122,7 +122,7 @@ class Flight(models.Model):
 
     def __str__(self):
         return (
-            f"{self.route.source} → {self.route.destination} {str(self.departure_time)}"
+            f"{self.route.source.city.name} → {self.route.destination.city.name} {str(self.departure_time)}"
         )
 
 
