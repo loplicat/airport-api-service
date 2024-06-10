@@ -71,7 +71,7 @@ class Airplane(models.Model):
 
 class Airport(models.Model):
     name = models.CharField(max_length=255)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="airports")
     closest_big_city = models.CharField(max_length=255)
 
     def __str__(self):
