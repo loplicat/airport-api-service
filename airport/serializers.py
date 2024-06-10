@@ -50,6 +50,12 @@ class AirplaneSerializer(serializers.ModelSerializer):
         )
 
 
+class AirplaneListSerializer(AirplaneSerializer):
+    airplane_type = serializers.SlugRelatedField(
+        read_only=True, slug_field="name"
+    )
+
+
 class AirportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airport
