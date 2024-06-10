@@ -8,16 +8,19 @@ from airport.models import (
     Airplane,
     Airport,
     Crew,
-    Route, Flight,
+    Route,
+    Flight,
 )
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
+    CityListSerializer,
     AirplaneTypeSerializer,
     AirplaneSerializer,
     AirportSerializer,
     CrewSerializer,
-    RouteSerializer, FlightSerializer,
+    RouteSerializer,
+    FlightSerializer,
 )
 
 
@@ -35,8 +38,13 @@ class CityViewSet(
     mixins.ListModelMixin,
     GenericViewSet
 ):
-    queryset = City.objects.all()
+    queryset = City.objects.select_related("country")
     serializer_class = CitySerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return CityListSerializer
+        return CitySerializer
 
 
 class AirplaneTypeViewSet(
@@ -91,6 +99,3 @@ class FlightViewSet(
 ):
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
-
-
-

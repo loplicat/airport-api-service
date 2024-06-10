@@ -19,13 +19,15 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 class CitySerializer(serializers.ModelSerializer):
-    country = serializers.SlugRelatedField(
-        read_only=True, slug_field="name"
-    )
-
     class Meta:
         model = City
         fields = ("id", "name", "country")
+
+
+class CityListSerializer(CitySerializer):
+    country = serializers.SlugRelatedField(
+        read_only=True, slug_field="name"
+    )
 
 
 class AirplaneTypeSerializer(serializers.ModelSerializer):
@@ -35,8 +37,6 @@ class AirplaneTypeSerializer(serializers.ModelSerializer):
 
 
 class AirplaneSerializer(serializers.ModelSerializer):
-    airplane_type = AirplaneTypeSerializer()
-
     class Meta:
         model = Airplane
         fields = (
