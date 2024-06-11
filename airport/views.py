@@ -10,6 +10,7 @@ from airport.models import (
     Crew,
     Route,
     Flight,
+    Order,
 )
 from airport.serializers import (
     CountrySerializer,
@@ -25,6 +26,8 @@ from airport.serializers import (
     RouteListSerializer,
     FlightSerializer,
     FlightListSerializer,
+    OrderSerializer,
+    OrderListSerializer,
 )
 
 
@@ -127,3 +130,24 @@ class FlightViewSet(
         if self.action == "list":
             return FlightListSerializer
         return FlightSerializer
+
+
+class OrderViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    GenericViewSet,
+):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return OrderListSerializer
+
+        return OrderSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
