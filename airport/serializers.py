@@ -96,7 +96,7 @@ class AirportListSerializer(AirportSerializer):
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("id", "first_name", "last_name", "full_name")
+        fields = ("id", "first_name", "last_name")
 
 
 class RouteSerializer(serializers.ModelSerializer):
@@ -109,25 +109,13 @@ class RouteListSerializer(serializers.ModelSerializer):
     source = serializers.SlugRelatedField(
         read_only=True, slug_field="name"
     )
-    source_city = serializers.CharField(
-        source="source.city.name", read_only=True
-    )
     destination = serializers.SlugRelatedField(
         read_only=True, slug_field="name"
-    )
-    destination_city = serializers.CharField(
-        source="destination.city.name", read_only=True
     )
 
     class Meta:
         model = Route
-        fields = (
-            "id",
-            "source",
-            "source_city",
-            "destination",
-            "destination_city",
-            "distance")
+        fields = ("id", "source", "destination", "distance")
 
 
 class FlightSerializer(serializers.ModelSerializer):
@@ -143,12 +131,36 @@ class FlightSerializer(serializers.ModelSerializer):
         )
 
 
+class RouteDetailSerializer(RouteListSerializer):
+    source_city = serializers.CharField(
+        source="source.city.name", read_only=True
+    )
+    destination_city = serializers.CharField(
+        source="destination.city.name", read_only=True
+    )
+    flights = FlightSerializer(
+        many=True,
+        read_only=True)
+
+    class Meta:
+        model = Route
+        fields = (
+            "id",
+            "source",
+            "source_city",
+            "destination",
+            "destination_city",
+            "distance",
+            "flights",
+        )
+
+
 class FlightListSerializer(FlightSerializer):
     source = serializers.CharField(
-        source="route.source.city.name", read_only=True
+        source="route.source", read_only=True
     )
     destination = serializers.CharField(
-        source="route.destination.city.name", read_only=True
+        source="route.destination", read_only=True
     )
     airplane = serializers.SlugRelatedField(
         read_only=True, slug_field="name"
