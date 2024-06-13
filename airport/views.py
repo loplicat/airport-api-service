@@ -25,6 +25,7 @@ from airport.serializers import (
     CrewSerializer,
     RouteSerializer,
     RouteListSerializer,
+    RouteDetailSerializer,
     FlightSerializer,
     FlightListSerializer,
     OrderSerializer,
@@ -104,14 +105,34 @@ class CrewViewSet(
 class RouteViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
     GenericViewSet
 ):
     queryset = Route.objects.select_related("source__city", "destination__city")
     serializer_class = RouteSerializer
 
+    def get_queryset(self):
+        """Retrieve the route with filters"""
+        source = self.request.query_params.get("source")
+        destination = self.request.query_params.get("destination")
+
+        queryset = self.queryset
+        if self.action == "retrieve":
+            queryset = queryset.prefetch_related("flights", "flights__crew")
+
+        if source:
+            queryset = queryset.filter(source__city__name__icontains=source)
+
+        if destination:
+            queryset = queryset.filter(destination__city__name__icontains=destination)
+
+        return queryset.distinct()
+
     def get_serializer_class(self):
         if self.action == "list":
             return RouteListSerializer
+        if self.action == "retrieve":
+            return RouteDetailSerializer
         return RouteSerializer
 
 
@@ -126,6 +147,21 @@ class FlightViewSet(
         "airplane"
     ).prefetch_related("crew")
     serializer_class = FlightSerializer
+
+    def get_queryset(self):
+        """Retrieve the flights with filters"""
+        source = self.request.query_params.get("source")
+        destination = self.request.query_params.get("destination")
+
+        queryset = self.queryset
+
+        if source:
+            queryset = queryset.filter(route__source__city__name__icontains=source)
+
+        if destination:
+            queryset = queryset.filter(route__destination__city__name__icontains=destination)
+
+        return queryset.distinct()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -143,7 +179,12 @@ class OrderViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        queryset = self.queryset.prefetch_related(
+            "tickets__flight__route",
+            "tickets__flight__airplane",
+            "tickets__flight__crew"
+        )
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == "list":
