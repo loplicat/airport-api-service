@@ -26,7 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-INTERNAL_IPS = ["127.0.0.1",]
+INTERNAL_IPS = ["127.0.0.1", ]
 
 # Application definition
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "debug_toolbar",
     "rest_framework",
+    "rest_framework.authtoken",
     "airport",
     "user",
 ]
@@ -126,6 +127,9 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    " ":
+        ["rest_framework.authentication.TokenAuthentication"],
+
     "DEFAULT_PERMISSION_CLASSES":
         ["airport.permissions.IsAdminOrIfAuthenticatedReadOnly"]
 }

@@ -1,7 +1,9 @@
 from django.db.models import F, Count
-from rest_framework import mixins
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import mixins, status
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.decorators import action
 
 from airport.models import (
     Country,
@@ -20,6 +22,7 @@ from airport.serializers import (
     CityListSerializer,
     AirplaneTypeSerializer,
     AirplaneSerializer,
+    AirplaneImageSerializer,
     AirplaneListSerializer,
     AirportSerializer,
     AirportListSerializer,
@@ -29,9 +32,9 @@ from airport.serializers import (
     RouteDetailSerializer,
     FlightSerializer,
     FlightListSerializer,
+    FlightDetailSerializer,
     OrderSerializer,
     OrderListSerializer,
-    FlightDetailSerializer,
 )
 
 
@@ -78,7 +81,22 @@ class AirplaneViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return AirplaneListSerializer
+        elif self.action == "upload_image":
+            return AirplaneImageSerializer
         return AirplaneSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        permission_classes=[IsAdminUser],
+        url_path="upload-image"
+    )
+    def upload_image(self, request, pk: int = None):
+        airplane = self.get_object()
+        serializer = self.get_serializer(airplane, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AirportViewSet(
@@ -150,8 +168,8 @@ class FlightViewSet(
         "airplane"
     ).prefetch_related("crew").annotate(
         tickets_available=(
-            F("airplane__rows") * F("airplane__seats_in_row")
-            - Count("tickets")
+                F("airplane__rows") * F("airplane__seats_in_row")
+                - Count("tickets")
         )
     )
     serializer_class = FlightSerializer

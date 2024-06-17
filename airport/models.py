@@ -42,9 +42,9 @@ class AirplaneType(models.Model):
         ordering = ["name"]
 
 
-def airplane_image_file_path(instance, filename):
+def airplane_image_file_path(instance: "Airplane", filename: str) -> str:
     _, extension = os.path.splitext(filename)
-    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{extension}"
 
     return os.path.join("uploads/airplanes/", filename)
 
