@@ -1,4 +1,6 @@
 from django.db.models import F, Count
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -155,6 +157,24 @@ class RouteViewSet(
             return RouteDetailSerializer
         return RouteSerializer
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "source",
+                type=OpenApiTypes.STR,
+                description="Filter by source name (ex. ?source=Kyiv)",
+            ),
+            OpenApiParameter(
+                "destination",
+                type=OpenApiTypes.STR,
+                description="Filter by destination name (ex. ?destination=New York)",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of routs"""
+        return super().list(request, *args, **kwargs)
+
 
 class FlightViewSet(
     mixins.CreateModelMixin,
@@ -195,6 +215,24 @@ class FlightViewSet(
         if self.action == "retrieve":
             return FlightDetailSerializer
         return FlightSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "source",
+                type=OpenApiTypes.STR,
+                description="Filter by source name (ex. ?source=Kyiv)",
+            ),
+            OpenApiParameter(
+                "destination",
+                type=OpenApiTypes.STR,
+                description="Filter by destination name (ex. ?destination=New York)",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of flights"""
+        return super().list(request, *args, **kwargs)
 
 
 class OrderViewSet(
