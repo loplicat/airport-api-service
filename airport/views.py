@@ -43,6 +43,7 @@ from airport.serializers import (
 
 class Pagination(PageNumberPagination):
     page_size = 10
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -53,6 +54,7 @@ class CountryViewSet(
 ):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
+    pagination_class = Pagination
 
 
 class CityViewSet(
@@ -62,6 +64,7 @@ class CityViewSet(
 ):
     queryset = City.objects.select_related("country")
     serializer_class = CitySerializer
+    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -76,6 +79,7 @@ class AirplaneTypeViewSet(
 ):
     queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
+    pagination_class = Pagination
 
 
 class AirplaneViewSet(
@@ -85,6 +89,7 @@ class AirplaneViewSet(
 ):
     queryset = Airplane.objects.select_related("airplane_type")
     serializer_class = AirplaneSerializer
+    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -92,6 +97,33 @@ class AirplaneViewSet(
         elif self.action == "upload_image":
             return AirplaneImageSerializer
         return AirplaneSerializer
+
+    @staticmethod
+    def _params_to_ints(qs):
+        """Converts a list of string IDs to a list of integers"""
+        return [int(str_id) for str_id in qs.split(",")]
+
+    def get_queryset(self):
+        """Retrieve the airplanes with filters"""
+        name = self.request.query_params.get("name")
+        airplane_types = self.request.query_params.get("airplane_types")
+        capacity_gte = self.request.query_params.get("capacity_gte")
+
+        queryset = self.queryset.annotate(
+            total_capacity=F("rows") * F("seats_in_row")
+        )
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        if airplane_types:
+            airplane_type_ids = self._params_to_ints(airplane_types)
+            queryset = queryset.filter(airplane_type__id__in=airplane_type_ids)
+
+        if capacity_gte:
+            queryset = queryset.filter(total_capacity__gte=capacity_gte)
+
+        return queryset.distinct()
 
     @action(
         methods=["POST"],
@@ -114,6 +146,7 @@ class AirportViewSet(
 ):
     queryset = Airport.objects.select_related("city__country")
     serializer_class = AirportSerializer
+    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -128,6 +161,7 @@ class CrewViewSet(
 ):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
+    pagination_class = Pagination
 
 
 class RouteViewSet(
@@ -138,6 +172,7 @@ class RouteViewSet(
 ):
     queryset = Route.objects.select_related("source__city", "destination__city")
     serializer_class = RouteSerializer
+    pagination_class = Pagination
 
     def get_queryset(self):
         """Retrieve the route with filters"""
@@ -199,6 +234,7 @@ class FlightViewSet(
         )
     )
     serializer_class = FlightSerializer
+    pagination_class = Pagination
 
     def get_queryset(self):
         """Retrieve the flights with filters"""
@@ -249,6 +285,7 @@ class OrderViewSet(
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = Pagination
 
     def get_queryset(self):
         queryset = self.queryset.prefetch_related(

@@ -136,7 +136,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES":
         ["airport.permissions.IsAdminOrIfAuthenticatedReadOnly"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_PAGINATION_CLASS": "airport.views.Pagination",
 }
 
 SPECTACULAR_SETTINGS = {
