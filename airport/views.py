@@ -85,6 +85,7 @@ class AirplaneTypeViewSet(
 class AirplaneViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
     GenericViewSet
 ):
     queryset = Airplane.objects.select_related("airplane_type")

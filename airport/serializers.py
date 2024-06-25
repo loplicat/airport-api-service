@@ -186,7 +186,12 @@ class FlightListSerializer(FlightSerializer):
 
 class FlightDetailSerializer(FlightSerializer):
     route = RouteListSerializer(many=False, read_only=True)
-    airplane = AirplaneListSerializer(many=False, read_only=True)
+    airplane = serializers.SlugRelatedField(
+        read_only=True, slug_field="name"
+    )
+    airplane_image = serializers.CharField(
+        source="airplane.image", read_only=True
+    )
     crew = serializers.SlugRelatedField(
         many=True, read_only=True, slug_field="full_name"
     )
@@ -197,6 +202,7 @@ class FlightDetailSerializer(FlightSerializer):
             "id",
             "route",
             "airplane",
+            "airplane_image",
             "crew",
             "departure_time",
             "arrival_time"
