@@ -68,8 +68,8 @@ class CityViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return CityListSerializer
-        return CitySerializer
+            self.serializer_class = CityListSerializer
+        return self.serializer_class
 
 
 class AirplaneTypeViewSet(
@@ -94,10 +94,10 @@ class AirplaneViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return AirplaneListSerializer
+            self.serializer_class = AirplaneListSerializer
         elif self.action == "upload_image":
-            return AirplaneImageSerializer
-        return AirplaneSerializer
+            self.serializer_class = AirplaneImageSerializer
+        return self.serializer_class
 
     @staticmethod
     def _params_to_ints(qs):
@@ -151,8 +151,8 @@ class AirportViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return AirportListSerializer
-        return AirportSerializer
+            self.serializer_class = AirportListSerializer
+        return self.serializer_class
 
 
 class CrewViewSet(
@@ -199,10 +199,10 @@ class RouteViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return RouteListSerializer
+            self.serializer_class = RouteListSerializer
         if self.action == "retrieve":
-            return RouteDetailSerializer
-        return RouteSerializer
+            self.serializer_class = RouteDetailSerializer
+        return self.serializer_class
 
     @extend_schema(
         parameters=[
@@ -264,10 +264,10 @@ class FlightViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return FlightListSerializer
+            self.serializer_class = FlightListSerializer
         if self.action == "retrieve":
-            return FlightDetailSerializer
-        return FlightSerializer
+            self.serializer_class = FlightDetailSerializer
+        return self.serializer_class
 
     @extend_schema(
         parameters=[
@@ -309,9 +309,8 @@ class OrderViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return OrderListSerializer
-
-        return OrderSerializer
+            self.serializer_class = OrderListSerializer
+        return self.serializer_class
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
