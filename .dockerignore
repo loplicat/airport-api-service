@@ -1,0 +1,15 @@
+.idea/
+.DS_Store
+.env
+.env-example
+venv/
+.pytest_cache/
+**__pycache__/
+**db.sqlite3
+Dockerfile
+.dockerignore
+docker-compose.yaml
+.flake8
+.git
+.github
+.gitignore

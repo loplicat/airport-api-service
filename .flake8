@@ -1,0 +1,11 @@
+[flake8]
+inline-quotes = "
+ignore = W503, F401
+max-line-length = 79
+max-complexity = 18
+select = B,C,E,F,W,T4,B9,Q0,N8,VNE
+exclude =
+    **migrations
+    venv
+    tests
+    airport_system/settings.py
