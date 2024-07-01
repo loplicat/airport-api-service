@@ -71,7 +71,11 @@ class Airplane(models.Model):
 
 class Airport(models.Model):
     name = models.CharField(max_length=255)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="airports")
+    city = models.ForeignKey(
+        City,
+        on_delete=models.CASCADE,
+        related_name="airports"
+    )
     closest_big_city = models.CharField(max_length=255)
 
     def __str__(self):
@@ -111,7 +115,11 @@ class Crew(models.Model):
 
 
 class Flight(models.Model):
-    route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name="flights")
+    route = models.ForeignKey(
+        Route,
+        on_delete=models.CASCADE,
+        related_name="flights"
+    )
     airplane = models.ForeignKey(Airplane, on_delete=models.CASCADE)
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
@@ -122,13 +130,18 @@ class Flight(models.Model):
 
     def __str__(self):
         return (
-            f"{self.route.source.city.name} → {self.route.destination.city.name} {str(self.departure_time)}"
+            f"{self.route.source.city.name} → "
+            f"{self.route.destination.city.name} "
+            f"{str(self.departure_time)}"
         )
 
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return str(self.created_at)
@@ -140,8 +153,16 @@ class Order(models.Model):
 class Ticket(models.Model):
     row = models.IntegerField()
     seat = models.IntegerField()
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name="tickets")
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="tickets")
+    flight = models.ForeignKey(
+        Flight,
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
 
     @staticmethod
     def validate_ticket(row, seat, airplane, error_to_raise):

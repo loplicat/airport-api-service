@@ -66,10 +66,7 @@ def sample_country(**params):
 def sample_city(**params):
     country = sample_country()
 
-    defaults = {
-        "name": "Kyiv",
-        "country": country
-    }
+    defaults = {"name": "Kyiv", "country": country}
     defaults.update(params)
 
     return City.objects.create(**defaults)
@@ -81,7 +78,7 @@ def sample_airport(**params):
     defaults = {
         "name": "Kyiv international airport",
         "closest_big_city": "Kyiv",
-        "city": city
+        "city": city,
     }
     defaults.update(params)
 
@@ -93,9 +90,7 @@ def sample_route(**params):
     country = sample_country(name="United Kingdom")
     city = sample_city(name="London", country=country)
     destination_airport = sample_airport(
-        name="Heathrow Airport",
-        closest_big_city="London",
-        city=city
+        name="Heathrow Airport", closest_big_city="London", city=city
     )
 
     defaults = {
@@ -116,7 +111,7 @@ def sample_flight(**params):
         "departure_time": "2024-10-02 14:00:00",
         "arrival_time": "2024-10-02 23:00:00",
         "airplane": airplane,
-        "route": route
+        "route": route,
     }
     defaults.update(params)
 
@@ -256,22 +251,20 @@ class AirplaneImageUploadTests(TestCase):
         )
         self.client.force_authenticate(self.user)
         self.airplane_type = sample_airplane_type(name="Type Boeing")
-        self.airplane = sample_airplane(
-            airplane_type=self.airplane_type
-        )
+        self.airplane = sample_airplane(airplane_type=self.airplane_type)
         self.country = Country.objects.create(name="Test")
         self.city = City.objects.create(name="Name", country=self.country)
-        self.airport = Airport.objects.create(name="Airport", city=self.city, closest_big_city="City")
+        self.airport = Airport.objects.create(
+            name="Airport", city=self.city, closest_big_city="City"
+        )
         self.route = Route.objects.create(
-            source=self.airport,
-            destination=self.airport,
-            distance=1000
+            source=self.airport, destination=self.airport, distance=1000
         )
         self.flight = Flight.objects.create(
             airplane=self.airplane,
             route=self.route,
             departure_time="2024-04-01T08:15:30.186000Z",
-            arrival_time="2024-04-01T08:15:30.186000Z"
+            arrival_time="2024-04-01T08:15:30.186000Z",
         )
 
     def tearDown(self):

@@ -26,9 +26,8 @@ class Command(BaseCommand):
                 self.stdout.write(
                     "Database unavailable on attempt {attempt}/{max_retries}:"
                     " {error}".format(
-                        attempt=retry + 1,
-                        max_retries=max_retries,
-                        error=ex)
+                        attempt=retry + 1, max_retries=max_retries, error=ex
+                    )
                 )
                 time.sleep(poll_seconds)
             else:

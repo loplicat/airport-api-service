@@ -60,7 +60,7 @@ class CountryViewSet(
 class CityViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = City.objects.select_related("country")
     serializer_class = CitySerializer
@@ -75,7 +75,7 @@ class CityViewSet(
 class AirplaneTypeViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
@@ -86,7 +86,7 @@ class AirplaneViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = Airplane.objects.select_related("airplane_type")
     serializer_class = AirplaneSerializer
@@ -130,7 +130,7 @@ class AirplaneViewSet(
         methods=["POST"],
         detail=True,
         permission_classes=[IsAdminUser],
-        url_path="upload-image"
+        url_path="upload-image",
     )
     def upload_image(self, request, pk: int = None):
         airplane = self.get_object()
@@ -169,9 +169,12 @@ class RouteViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
-    queryset = Route.objects.select_related("source__city", "destination__city")
+    queryset = Route.objects.select_related(
+        "source__city",
+        "destination__city"
+    )
     serializer_class = RouteSerializer
     pagination_class = Pagination
 
@@ -188,7 +191,9 @@ class RouteViewSet(
             queryset = queryset.filter(source__city__name__icontains=source)
 
         if destination:
-            queryset = queryset.filter(destination__city__name__icontains=destination)
+            queryset = queryset.filter(
+                destination__city__name__icontains=destination
+            )
 
         return queryset.distinct()
 
@@ -209,8 +214,9 @@ class RouteViewSet(
             OpenApiParameter(
                 "destination",
                 type=OpenApiTypes.STR,
-                description="Filter by destination name (ex. ?destination=New York)",
-            )
+                description="Filter by destination "
+                            "name (ex. ?destination=New York)",
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -222,7 +228,7 @@ class FlightViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = Flight.objects.select_related(
         "route__source__city",
@@ -230,8 +236,8 @@ class FlightViewSet(
         "airplane"
     ).prefetch_related("crew").annotate(
         tickets_available=(
-                F("airplane__rows") * F("airplane__seats_in_row")
-                - Count("tickets")
+            F("airplane__rows") * F("airplane__seats_in_row")
+            - Count("tickets")
         )
     )
     serializer_class = FlightSerializer
@@ -245,10 +251,14 @@ class FlightViewSet(
         queryset = self.queryset
 
         if source:
-            queryset = queryset.filter(route__source__city__name__icontains=source)
+            queryset = queryset.filter(
+                route__source__city__name__icontains=source
+            )
 
         if destination:
-            queryset = queryset.filter(route__destination__city__name__icontains=destination)
+            queryset = queryset.filter(
+                route__destination__city__name__icontains=destination
+            )
 
         return queryset.distinct()
 
@@ -269,8 +279,9 @@ class FlightViewSet(
             OpenApiParameter(
                 "destination",
                 type=OpenApiTypes.STR,
-                description="Filter by destination name (ex. ?destination=New York)",
-            )
+                description="Filter by destination "
+                            "name (ex. ?destination=New York)",
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -292,7 +303,7 @@ class OrderViewSet(
         queryset = self.queryset.prefetch_related(
             "tickets__flight__route",
             "tickets__flight__airplane",
-            "tickets__flight__crew"
+            "tickets__flight__crew",
         )
         return queryset.filter(user=self.request.user)
 
