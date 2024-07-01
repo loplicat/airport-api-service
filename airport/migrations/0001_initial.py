@@ -114,6 +114,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         to="airport.airplanetype",
+                        related_name="airplanes"
                     ),
                 ),
             ],

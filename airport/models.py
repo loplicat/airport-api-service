@@ -54,7 +54,10 @@ class Airplane(models.Model):
     rows = models.IntegerField()
     seats_in_row = models.IntegerField()
     airplane_type = models.ForeignKey(
-        AirplaneType, on_delete=models.SET_NULL, null=True
+        AirplaneType,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="airplanes"
     )
     image = models.ImageField(null=True, upload_to=airplane_image_file_path)
 
@@ -107,7 +110,7 @@ class Crew(models.Model):
     last_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def full_name(self):
