@@ -52,7 +52,7 @@ To run the project with Docker, follow these steps:
 7. Use this command to load prepared data from the fixture:
 
    ```bash
-    `python manage.py loaddata airport_service_db_data.json`
+    python manage.py loaddata airport_service_db_data.json
     ```
 8. Run the development server:
 
